@@ -1,4 +1,3 @@
-[![progress-banner](https://backend.codecrafters.io/progress/redis/a7b599d4-32c9-4606-8424-736a8c7bcedc)](https://app.codecrafters.io/users/vinhho2508?r=2qF)
 
 This is a starting point for Go solutions to the
 ["Build Your Own Redis" Challenge](https://codecrafters.io/challenges/redis).
