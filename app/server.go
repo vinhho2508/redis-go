@@ -6,11 +6,9 @@ import (
 	"log"
 	"net"
 	"os"
-	// "time"
-	// "bytes"
 )
 
-func stop_server(l io.Closer) {
+func stopServer(l io.Closer) {
 	err := l.Close()
 	if err != nil {
 		fmt.Println("close server error")
@@ -25,36 +23,30 @@ func main() {
 		os.Exit(1)
 	}
 
-	c, err := l.Accept()
-	if err != nil {
-		fmt.Println("Error accepting connection: ", err.Error())
-		os.Exit(1)
-	}
-	
-	defer stop_server(c)
+	defer stopServer(l)
 
-	
+	for {
+		c, err := l.Accept()
+		if err != nil {
+			fmt.Println("Error accepting connection: ", err.Error())
+			continue
+		}
+		go handleConnection(c)
+	}
+}
+
+func handleConnection(c net.Conn) {
+	defer c.Close()
 	buf := make([]byte, 128)
 	for {
-		_, err = c.Read(buf)
+		n, err := c.Read(buf)
 		if err != nil {
-			break
+			return
 		}
-	
-		log.Printf("Read: %s", buf)
-		_, err = c.Write([]byte("+PONG\r\n"))
-		// if bytes.Equal(buf, []byte("*1\r\n$4\r\nPING\r\n")) {
-		// 	if err != nil {
-		// 		fmt.Println("Can not write")
-		// 	}
-		// } else {
-		// 	_,err = c.Write([]byte("+NO\r\n"))
-		// 	if err != nil {
-		// 		fmt.Println("Can not write")
-		// 	}
-		// }
 
-		// time.Sleep(time.Minute)
-
+		log.Printf("Read: %s", buf[:n])
+		if _, err := c.Write([]byte("+PONG\r\n")); err != nil {
+			fmt.Println("Error write output: ", err.Error())
 		}
+	}
 }
